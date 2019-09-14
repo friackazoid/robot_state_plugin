@@ -22,12 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
   class_loader
   eigen_conversions
   geometric_shapes
-#   interactive_markers
-#   moveit_ros_perception
   moveit_ros_planning_interface
-#   moveit_ros_robot_interaction
-#   moveit_ros_warehouse
-#   object_recognition_msgs
   pluginlib
   rosconsole
   roscpp
@@ -66,25 +61,16 @@ catkin_package(
   LIBRARIES
     moveit_rviz_plugin_render_tools
     moveit_robot_state_rviz_plugin_core
-    # moveit_motion_planning_rviz_plugin_core
-    # moveit_trajectory_rviz_plugin_core
     moveit_planning_scene_rviz_plugin_core
   INCLUDE_DIRS
     rviz_plugin_render_tools/include
     robot_state_rviz_plugin/include
     planning_scene_rviz_plugin/include
-    # motion_planning_rviz_plugin/include
-    # trajectory_rviz_plugin/include
   CATKIN_DEPENDS
     moveit_ros_planning_interface
-    # moveit_ros_robot_interaction
-    # object_recognition_msgs
   DEPENDS
     EIGEN3
 )
-
-catkin_install_python(PROGRAMS scripts/moveit_joy.py DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-catkin_python_setup()
 
 include_directories(rviz_plugin_render_tools/include
                     robot_state_rviz_plugin/include
@@ -102,19 +88,10 @@ include_directories(SYSTEM
 add_subdirectory(rviz_plugin_render_tools)
 add_subdirectory(robot_state_rviz_plugin)
 add_subdirectory(planning_scene_rviz_plugin)
-# add_subdirectory(motion_planning_rviz_plugin)
-# add_subdirectory(trajectory_rviz_plugin)
 
 install(FILES
-#   motion_planning_rviz_plugin_description.xml
-#   trajectory_rviz_plugin_description.xml
   planning_scene_rviz_plugin_description.xml
   robot_state_rviz_plugin_description.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 install(DIRECTORY icons DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-
-# if (CATKIN_ENABLE_TESTING)
-#   find_package(rostest REQUIRED)
-#   add_rostest(test/moveit_joy.test)
-# endif()
