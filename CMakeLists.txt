@@ -65,7 +65,6 @@ catkin_package(
   INCLUDE_DIRS
     rviz_plugin_render_tools/include
     robot_state_rviz_plugin/include
-    planning_scene_rviz_plugin/include
   CATKIN_DEPENDS
     moveit_ros_planning_interface
   DEPENDS
@@ -74,9 +73,6 @@ catkin_package(
 
 include_directories(rviz_plugin_render_tools/include
                     robot_state_rviz_plugin/include
-                    planning_scene_rviz_plugin/include
-                    # motion_planning_rviz_plugin/include
-                    # trajectory_rviz_plugin/include
                     ${Boost_INCLUDE_DIRS}
                     ${catkin_INCLUDE_DIRS})
 
@@ -87,10 +83,8 @@ include_directories(SYSTEM
 
 add_subdirectory(rviz_plugin_render_tools)
 add_subdirectory(robot_state_rviz_plugin)
-add_subdirectory(planning_scene_rviz_plugin)
 
 install(FILES
-  planning_scene_rviz_plugin_description.xml
   robot_state_rviz_plugin_description.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
