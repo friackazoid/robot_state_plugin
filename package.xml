@@ -1,21 +1,15 @@
 <package>
-  <name>moveit_ros_visualization</name>
+  <name>robot_state_plugin</name>
   <version>0.9.17</version>
-  <description>Components of MoveIt! that offer visualization</description>
+  <description>CHAMP Setup Assistant RVIZ plugin</description>
 
   <author email="isucan@google.com">Ioan Sucan</author>
   <author email="dave@dav.ee">Dave Coleman</author>
   <author email="robot.moveit@gmail.com">Sachin Chitta</author>
 
-  <maintainer email="jon.binney@gmail.com">Jon Binney</maintainer>
-  <maintainer email="mferguson@fetchrobotics.com">Michael Ferguson</maintainer>
-  <maintainer email="moveit_releasers@googlegroups.com">MoveIt! Release Team</maintainer>
+  <maintainer email="jimenojmm@gmail.com">Juan Miguel Jimeno</maintainer>
 
   <license>BSD</license>
-
-  <url type="website">http://moveit.ros.org</url>
-  <url type="bugtracker">https://github.com/ros-planning/moveit/issues</url>
-  <url type="repository">https://github.com/ros-planning/moveit</url>
 
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>

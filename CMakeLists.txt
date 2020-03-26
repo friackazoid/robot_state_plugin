@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.12)
-project(moveit_ros_visualization)
+project(robot_state_plugin)
 
 add_compile_options(-std=c++11)
 
