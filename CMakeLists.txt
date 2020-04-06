@@ -20,23 +20,11 @@ link_directories( ${OGRE_LIBRARY_DIRS} )
 
 find_package(catkin REQUIRED COMPONENTS
   class_loader
-  eigen_conversions
-  geometric_shapes
   moveit_ros_planning_interface
   pluginlib
-  rosconsole
   roscpp
-  rospy
   rviz
-  tf
 )
-
-find_package(Eigen3 REQUIRED)
-
-# Eigen 3.2 (Wily) only provides EIGEN3_INCLUDE_DIR, not EIGEN3_INCLUDE_DIRS
-if(NOT EIGEN3_INCLUDE_DIRS)
-  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
-endif()
 
 # Qt Stuff
 if(rviz_QT_VERSION VERSION_LESS "5")
@@ -68,7 +56,6 @@ catkin_package(
   CATKIN_DEPENDS
     moveit_ros_planning_interface
   DEPENDS
-    EIGEN3
 )
 
 include_directories(rviz_plugin_render_tools/include
@@ -77,7 +64,6 @@ include_directories(rviz_plugin_render_tools/include
                     ${catkin_INCLUDE_DIRS})
 
 include_directories(SYSTEM
-                    ${EIGEN3_INCLUDE_DIRS}
                     ${QT_INCLUDE_DIR}
                     ${OGRE_INCLUDE_DIRS})
 

@@ -39,12 +39,11 @@
 
 #include <moveit/macros/class_forward.h>
 #include <moveit/robot_state/robot_state.h>
-#include <moveit/rviz_plugin_render_tools/octomap_render.h>
 #include <rviz/robot/robot.h>
 
 namespace moveit_rviz_plugin
 {
-MOVEIT_CLASS_FORWARD(RenderShapes);
+// MOVEIT_CLASS_FORWARD(RenderShapes);
 MOVEIT_CLASS_FORWARD(RobotStateVisualization);
 
 /** \brief Update the links of an rviz::Robot using a robot_state::RobotState */
@@ -95,10 +94,7 @@ private:
                     const std_msgs::ColorRGBA& default_attached_object_color,
                     const std::map<std::string, std_msgs::ColorRGBA>* color_map);
   rviz::Robot robot_;
-  RenderShapesPtr render_shapes_;
   std_msgs::ColorRGBA default_attached_object_color_;
-  OctreeVoxelRenderMode octree_voxel_render_mode_;
-  OctreeVoxelColorMode octree_voxel_color_mode_;
 
   bool visible_;
   bool visual_visible_;
