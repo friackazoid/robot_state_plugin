@@ -34,12 +34,11 @@
 
 /* Author: Ioan Sucan */
 
-#ifndef MOVEIT_PLANNING_SCENE_RVIZ_PLUGIN_ROBOT_STATE_VISUALIZATION_
-#define MOVEIT_PLANNING_SCENE_RVIZ_PLUGIN_ROBOT_STATE_VISUALIZATION_
+#pragma once
 
 #include <moveit/macros/class_forward.h>
 #include <moveit/robot_state/robot_state.h>
-#include <rviz/robot/robot.h>
+#include <rviz_default_plugins/robot/robot.hpp>
 
 namespace moveit_rviz_plugin
 {
@@ -50,10 +49,10 @@ MOVEIT_CLASS_FORWARD(RobotStateVisualization);
 class RobotStateVisualization
 {
 public:
-  RobotStateVisualization(Ogre::SceneNode* root_node, rviz::DisplayContext* context, const std::string& name,
-                          rviz::Property* parent_property);
+  RobotStateVisualization(Ogre::SceneNode* root_node, rviz_common::DisplayContext* context, const std::string& name,
+                          rviz_common::properties::Property* parent_property);
 
-  rviz::Robot& getRobot()
+  rviz_default_plugins::robot::Robot& getRobot()
   {
     return robot_;
   }
@@ -61,13 +60,13 @@ public:
   void load(const urdf::ModelInterface& descr, bool visual = true, bool collision = true);
   void clear();
 
-  void update(const robot_state::RobotStateConstPtr& kinematic_state);
-  void update(const robot_state::RobotStateConstPtr& kinematic_state,
-              const std_msgs::ColorRGBA& default_attached_object_color);
-  void update(const robot_state::RobotStateConstPtr& kinematic_state,
-              const std_msgs::ColorRGBA& default_attached_object_color,
-              const std::map<std::string, std_msgs::ColorRGBA>& color_map);
-  void setDefaultAttachedObjectColor(const std_msgs::ColorRGBA& default_attached_object_color);
+  void update(const moveit::core::RobotStateConstPtr& kinematic_state);
+  void update(const moveit::core::RobotStateConstPtr& kinematic_state,
+              const std_msgs::msg::ColorRGBA& default_attached_object_color);
+  void update(const moveit::core::RobotStateConstPtr& kinematic_state,
+              const std_msgs::msg::ColorRGBA& default_attached_object_color,
+              const std::map<std::string, std_msgs::msg::ColorRGBA>& color_map);
+  void setDefaultAttachedObjectColor(const std_msgs::msg::ColorRGBA& default_attached_object_color);
 
   /**
    * \brief Set the robot as a whole to be visible or not
@@ -90,11 +89,11 @@ public:
   void setAlpha(float alpha);
 
 private:
-  void updateHelper(const robot_state::RobotStateConstPtr& kinematic_state,
-                    const std_msgs::ColorRGBA& default_attached_object_color,
-                    const std::map<std::string, std_msgs::ColorRGBA>* color_map);
-  rviz::Robot robot_;
-  std_msgs::ColorRGBA default_attached_object_color_;
+  void updateHelper(const moveit::core::RobotStateConstPtr& kinematic_state,
+                    const std_msgs::msg::ColorRGBA& default_attached_object_color,
+                    const std::map<std::string, std_msgs::msg::ColorRGBA>* color_map);
+  rviz_default_plugins::robot::Robot robot_;
+  std_msgs::msg::ColorRGBA default_attached_object_color_;
 
   bool visible_;
   bool visual_visible_;
@@ -102,4 +101,3 @@ private:
 };
 }
 
-#endif

@@ -1,4 +1,4 @@
-<package>
+<package format="3">
   <name>robot_state_plugin</name>
   <version>0.9.17</version>
   <description>CHAMP Setup Assistant RVIZ plugin</description>
@@ -11,7 +11,7 @@
 
   <license>BSD</license>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>pkg-config</buildtool_depend>
 
   <build_depend>libogre-dev</build_depend>
@@ -20,13 +20,11 @@
   <build_depend>class_loader</build_depend>
   <build_depend>moveit_ros_planning_interface</build_depend>
   <build_depend version_gte="1.11.2">pluginlib</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rviz</build_depend>
+  <build_depend>rviz2</build_depend>
 
-  <run_depend>moveit_ros_planning_interface</run_depend>
-  <run_depend version_gte="1.11.2">pluginlib</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>rviz</run_depend>
+  <exec_depend>moveit_ros_planning_interface</exec_depend>
+  <exec_depend version_gte="1.11.2">pluginlib</exec_depend>
+  <exec_depend>rviz2</exec_depend>
 
   <test_depend>rostest</test_depend>
 
