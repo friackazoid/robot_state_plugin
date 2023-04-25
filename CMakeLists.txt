@@ -111,4 +111,6 @@ install(FILES
 
 install(DIRECTORY icons DESTINATION share/${PROJECT_NAME})
 
+ament_export_targets(moveit_rviz_plugin_render_tools HAS_LIBRARY_TARGET)
+ament_export_targets(champ_robot_state_rviz_plugin HAS_LIBRARY_TARGET)
 ament_package()
