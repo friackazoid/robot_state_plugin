@@ -1,7 +1,7 @@
 
 set(MOVEIT_LIB_NAME moveit_robot_state_rviz_plugin)
 
-add_library(${MOVEIT_LIB_NAME}_core
+add_library(${MOVEIT_LIB_NAME}_core SHARED
   src/robot_state_display.cpp
   include/moveit/robot_state_rviz_plugin/robot_state_display.h)
 

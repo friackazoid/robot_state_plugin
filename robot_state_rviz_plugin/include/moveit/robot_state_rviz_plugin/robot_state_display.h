@@ -139,7 +139,7 @@ protected:
   bool update_state_;
   bool load_robot_model_;  // for delayed robot initialization
 
-  rviz_commonkColorn::properties::StringProperty* robot_description_property_;
+  rviz_common::properties::StringProperty* robot_description_property_;
   rviz_common::properties::StringProperty* root_link_name_property_;
   rviz_common::properties::StringProperty* highlight_link_;
   rviz_common::properties::StringProperty* unhighlight_link_;

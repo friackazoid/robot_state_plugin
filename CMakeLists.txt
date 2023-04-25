@@ -86,8 +86,10 @@ add_definitions(-DQT_NO_KEYWORDS)
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   class_loader
-  rviz2
+  rviz_common
+  rviz_default_plugins
   rviz_ogre_vendor
+  rviz_rendering
 )
 
 include_directories(rviz_plugin_render_tools/include
@@ -101,8 +103,12 @@ include_directories(SYSTEM
 add_subdirectory(rviz_plugin_render_tools)
 add_subdirectory(robot_state_rviz_plugin)
 
+pluginlib_export_plugin_description_file(rviz_common robot_state_rviz_plugin_description.xml) 
+
 install(FILES
   robot_state_rviz_plugin_description.xml
-  DESTINATION share/${PROJECT_NAME})
+  DESTINATION share)
 
 install(DIRECTORY icons DESTINATION share/${PROJECT_NAME})
+
+ament_package()
