@@ -34,7 +34,9 @@
 
 /* Author: Ioan Sucan */
 
-#include <moveit/robot_state_rviz_plugin/robot_state_display.h>
+//#include <moveit/robot_state_rviz_plugin/robot_state_display.h>
+
+#include "moveit/robot_state_rviz_plugin/robot_state_display.h"
 #include <moveit/robot_state/conversions.h>
 #include <moveit/utils/message_checks.h>
 
@@ -112,7 +114,6 @@ RobotStateDisplay::RobotStateDisplay() : Display(), update_state_(false), load_r
 //                               SLOT(changedHighlightColor()), this);
 
 
-
 }
 
 // ******************************************************************************************
@@ -125,7 +126,15 @@ RobotStateDisplay::~RobotStateDisplay()
 void RobotStateDisplay::onInitialize()
 {
   Display::onInitialize();
-  robot_.reset(new RobotStateVisualization(scene_node_, context_, "Robot State", this));
+  auto ros_node_abstraction = context_->getRosNodeAbstraction().lock();
+  if (!ros_node_abstraction)
+  {
+    RVIZ_COMMON_LOG_WARNING("Unable to lock weak_ptr from DisplayContext in RobotStateDisplay constructor");
+    return;
+  }
+
+  root_nh_ = ros_node_abstraction->get_raw_node();
+  robot_ = std::make_shared<RobotStateVisualization>(scene_node_, context_, "Robot State", this);
   changedEnableVisualVisible();
   changedEnableCollisionVisible();
   robot_->setVisible(false);
@@ -200,11 +209,6 @@ void RobotStateDisplay::changedEnableCollisionVisible()
   robot_->setCollisionVisible(enable_collision_visible_->getBool());
 }
 
-static bool operator!=(const std_msgs::msg::ColorRGBA& a, const std_msgs::msg::ColorRGBA& b)
-{
-  return a.r != b.r || a.g != b.g || a.b != b.b || a.a != b.a;
-}
-
 void RobotStateDisplay::setRobotHighlights(const moveit_msgs::msg::DisplayRobotState::_highlight_links_type& highlight_links)
 {
   if (highlight_links.empty() && highlights_.empty())
@@ -243,12 +247,12 @@ void RobotStateDisplay::setRobotHighlights(const moveit_msgs::msg::DisplayRobotS
         unsetHighlight(ho->first);
         ++ho;
       }
-      //else if (hn->second != ho->second)
-      //{
-      //  setHighlight(hn->first, hn->second);
-      //  ++ho;
-      //  ++hn;
-      //}
+      else if (hn->second != ho->second)
+      {
+        setHighlight(hn->first, hn->second);
+        ++ho;
+        ++hn;
+      }
       else
       {
         ++ho;
@@ -342,7 +346,7 @@ void RobotStateDisplay::newRobotStateCallback(const moveit_msgs::msg::DisplayRob
   if (!kmodel_)
     return;
   if (!kstate_)
-    kstate_.reset(new moveit::core::RobotState(kmodel_));
+    kstate_ = std::make_shared<moveit::core::RobotState>(kmodel_);
   // possibly use TF to construct a robot_state::Transforms object to pass in to the conversion functio?
   
   try
@@ -350,6 +354,7 @@ void RobotStateDisplay::newRobotStateCallback(const moveit_msgs::msg::DisplayRob
      if (!moveit::core::isEmpty(state_msg->state))
         moveit::core::robotStateMsgToRobotState(state_msg->state, *kstate_);
      setRobotHighlights(state_msg->highlight_links);
+     RCLCPP_DEBUG_STREAM(root_nh_->get_logger(), "My log message " << 4);
   }
   catch (const moveit::Exception& e)
   {
@@ -362,14 +367,14 @@ void RobotStateDisplay::newRobotStateCallback(const moveit_msgs::msg::DisplayRob
             
   //robot_state::robotStateMsgToRobotState(state_msg->state, *kstate_);
 
-  //if (robot_->isVisible() != !state_msg->hide)
-  //{
+  if (robot_->isVisible() != !state_msg->hide)
+  {
     robot_->setVisible(!state_msg->hide);
-    //if (robot_->isVisible())
-    //  setStatus(rviz_common::properties::StatusProperty::Ok, "RobotState", "");
-    //else
-    //  setStatus(rviz_common::properties::StatusProperty::Warn, "RobotState", "Hidden");
-  //}
+    if (robot_->isVisible())
+      setStatus(rviz_common::properties::StatusProperty::Ok, "RobotState", "");
+    else
+      setStatus(rviz_common::properties::StatusProperty::Warn, "RobotState", "Hidden");
+  }
   //setRobotHighlights(state_msg->highlight_links);
   update_state_ = true;
 }
@@ -415,21 +420,26 @@ void RobotStateDisplay::loadRobotModel()
 
   if (rdf_loader_->getURDF())
   {
-    const srdf::ModelSharedPtr& srdf =
-        rdf_loader_->getSRDF() ? rdf_loader_->getSRDF() : srdf::ModelSharedPtr(new srdf::Model());
-    kmodel_.reset(new moveit::core::RobotModel(rdf_loader_->getURDF(), srdf));
-    robot_->load(*kmodel_->getURDF());
-    kstate_.reset(new moveit::core::RobotState(kmodel_));
-    kstate_->setToDefaultValues();
-    bool oldState = root_link_name_property_->blockSignals(true);
-    root_link_name_property_->setStdString(getRobotModel()->getRootLinkName());
-    root_link_name_property_->blockSignals(oldState);
-    update_state_ = true;
-    setStatus(rviz_common::properties::StatusProperty::Ok, "RobotState", "Planning Model Loaded Successfully");
+    try {
+        const srdf::ModelSharedPtr& srdf =
+            rdf_loader_->getSRDF() ? rdf_loader_->getSRDF() : srdf::ModelSharedPtr(new srdf::Model());
+        kmodel_ =  std::make_shared<moveit::core::RobotModel>(rdf_loader_->getURDF(), srdf);
+        robot_->load(*kmodel_->getURDF());
+        kstate_ = std::make_shared<moveit::core::RobotState>(kmodel_);
+        kstate_->setToDefaultValues();
+        bool oldState = root_link_name_property_->blockSignals(true);
+        root_link_name_property_->setStdString(getRobotModel()->getRootLinkName());
+        root_link_name_property_->blockSignals(oldState);
+        update_state_ = true;
+        setStatus(rviz_common::properties::StatusProperty::Ok, "RobotState", "Planning Model Loaded Successfully");
 
-    changedEnableVisualVisible();
-    changedEnableCollisionVisible();
-    robot_->setVisible(true);
+        changedEnableVisualVisible();
+        changedEnableCollisionVisible();
+        robot_->setVisible(true);
+    } catch (const moveit::Exception& e) {
+        setStatus(rviz_common::properties::StatusProperty::Error, "RobotState", e.what());
+        robot_->setVisible(false);
+    }
   }
   else
     setStatus(rviz_common::properties::StatusProperty::Error, "RobotState", "No Planning Model Loaded");

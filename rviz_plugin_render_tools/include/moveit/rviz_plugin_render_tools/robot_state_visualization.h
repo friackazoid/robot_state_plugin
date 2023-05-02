@@ -42,14 +42,15 @@
 
 namespace moveit_rviz_plugin
 {
-// MOVEIT_CLASS_FORWARD(RenderShapes);
+//MOVEIT_CLASS_FORWARD(RenderShapes);
 MOVEIT_CLASS_FORWARD(RobotStateVisualization);
 
 /** \brief Update the links of an rviz::Robot using a robot_state::RobotState */
 class RobotStateVisualization
 {
 public:
-  RobotStateVisualization(Ogre::SceneNode* root_node, rviz_common::DisplayContext* context, const std::string& name,
+  RobotStateVisualization(Ogre::SceneNode* root_node, rviz_common::DisplayContext* context,
+                        const std::string& name,
                           rviz_common::properties::Property* parent_property);
 
   rviz_default_plugins::robot::Robot& getRobot()
@@ -67,6 +68,8 @@ public:
               const std_msgs::msg::ColorRGBA& default_attached_object_color,
               const std::map<std::string, std_msgs::msg::ColorRGBA>& color_map);
   void setDefaultAttachedObjectColor(const std_msgs::msg::ColorRGBA& default_attached_object_color);
+
+  bool isVisible() const { return visible_; }
 
   /**
    * \brief Set the robot as a whole to be visible or not

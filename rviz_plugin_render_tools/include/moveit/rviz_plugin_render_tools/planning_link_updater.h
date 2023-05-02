@@ -51,7 +51,7 @@ public:
 
   virtual bool getLinkTransforms(const std::string& link_name, Ogre::Vector3& visual_position,
                                  Ogre::Quaternion& visual_orientation, Ogre::Vector3& collision_position,
-                                 Ogre::Quaternion& collision_orientation) const;
+                                 Ogre::Quaternion& collision_orientation) const override;
 
 private:
   moveit::core::RobotStateConstPtr kinematic_state_;

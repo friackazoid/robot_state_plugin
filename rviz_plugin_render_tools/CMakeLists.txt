@@ -11,7 +11,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
   ${PROJECT_BUILD_DIR}/rviz_plugin_render_tools
 )
 
-add_library(${MOVEIT_LIB_NAME}
+add_library(${MOVEIT_LIB_NAME} SHARED
   src/robot_state_visualization.cpp
   src/planning_link_updater.cpp
   ${HEADERS}
@@ -22,20 +22,15 @@ add_library(${MOVEIT_LIB_NAME}
 #set_target_properties(${MOVEIT_LIB_NAME} PROPERTIES VERSION ${${PROJECT_NAME}_VERSION})
 
 target_link_libraries(${MOVEIT_LIB_NAME}
-    #  ${catkin_LIBRARIES}
-    # moveit_rviz_plugin_render_tools
-    #moveit_robot_state_rviz_plugin_core
-    #moveit_planning_scene_rviz_plugin_core
-  #  ${OGRE_LIBRARIES}
-  ${QT_LIBRARIES}
+    Qt5::Widgets
 )
 
 ament_target_dependencies(${MOVEIT_LIB_NAME}
     rclcpp
     moveit_core
-    rviz2
     Boost
     rviz_ogre_vendor
+    rviz_common
     rviz_default_plugins
 )
 target_include_directories(${MOVEIT_LIB_NAME} PRIVATE "${OGRE_PREFIX_DIR}/include")

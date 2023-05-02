@@ -1,7 +1,7 @@
 
 set(LIB_NAME champ_robot_state_rviz_plugin)
 
-add_library(${LIB_NAME}_core 
+add_library(${LIB_NAME}_core  SHARED
   src/robot_state_display.cpp
   include/moveit/robot_state_rviz_plugin/robot_state_display.h)
 
@@ -32,11 +32,7 @@ add_library(${LIB_NAME} SHARED src/plugin_init.cpp)
 
 #set_target_properties(${MOVEIT_LIB_NAME} PROPERTIES VERSION ${${PROJECT_NAME}_VERSION})
 
-target_link_libraries(${LIB_NAME} 
-    ${LIB_NAME}_core 
-    #    moveit_planning_scene_rviz_plugin_core 
-    #${Boost_LIBRARIES})
-)
+target_link_libraries(${LIB_NAME} ${LIB_NAME}_core )
 
 ament_target_dependencies(${LIB_NAME}
     rclcpp

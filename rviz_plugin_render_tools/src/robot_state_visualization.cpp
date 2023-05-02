@@ -53,6 +53,7 @@ RobotStateVisualization::RobotStateVisualization(Ogre::SceneNode* root_node, rvi
   default_attached_object_color_.g = 0.7f;
   default_attached_object_color_.b = 0.0f;
   default_attached_object_color_.a = 1.0f;
+
 }
 
 void RobotStateVisualization::load(const urdf::ModelInterface& descr, bool visual, bool collision)
@@ -101,8 +102,8 @@ void RobotStateVisualization::updateHelper(const moveit::core::RobotStateConstPt
 {
   robot_.update(PlanningLinkUpdater(kinematic_state));
 
-  std::vector<const moveit::core::AttachedBody*> attached_bodies;
-  kinematic_state->getAttachedBodies(attached_bodies);
+  //std::vector<const moveit::core::AttachedBody*> attached_bodies;
+  //kinematic_state->getAttachedBodies(attached_bodies);
 
   robot_.setVisualVisible(visual_visible_);
   robot_.setCollisionVisible(collision_visible_);
