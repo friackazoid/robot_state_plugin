@@ -37,6 +37,7 @@
 //#include <moveit/robot_state_rviz_plugin/robot_state_display.h>
 
 #include "moveit/robot_state_rviz_plugin/robot_state_display.h"
+#include <memory>
 #include <moveit/robot_state/conversions.h>
 #include <moveit/utils/message_checks.h>
 
@@ -56,6 +57,7 @@
 
 #include <OgreSceneManager.h>
 #include <OgreSceneNode.h>
+#include <srdfdom/model.h>
 
 namespace moveit_rviz_plugin
 {
@@ -70,8 +72,7 @@ RobotStateDisplay::RobotStateDisplay() : Display(), update_state_(false), load_r
 
   robot_state_topic_property_ = new rviz_common::properties::RosTopicProperty(
       "Robot State Topic", "display_robot_state", rosidl_generator_traits::data_type<moveit_msgs::msg::DisplayRobotState>(),
-      "The topic on which the moveit_msgs::RobotState messages are received", this, SLOT(changedRobotStateTopic()),
-      this);
+      "The topic on which the moveit_msgs::RobotState messages are received", this, SLOT(changedRobotStateTopic()), this);
 
   // Planning scene category -------------------------------------------------------------------------------------------
   root_link_name_property_ =
@@ -132,7 +133,7 @@ void RobotStateDisplay::onInitialize()
     RVIZ_COMMON_LOG_WARNING("Unable to lock weak_ptr from DisplayContext in RobotStateDisplay constructor");
     return;
   }
-
+  robot_state_topic_property_->initialize(ros_node_abstraction);
   root_nh_ = ros_node_abstraction->get_raw_node();
   robot_ = std::make_shared<RobotStateVisualization>(scene_node_, context_, "Robot State", this);
   changedEnableVisualVisible();
@@ -338,7 +339,6 @@ void RobotStateDisplay::changedRobotStateTopic()
 
   robot_state_subscriber_ = root_nh_->create_subscription<moveit_msgs::msg::DisplayRobotState>(robot_state_topic_property_->getStdString(), 10,
         std::bind(&RobotStateDisplay::newRobotStateCallback, this, std::placeholders::_1));
-//                                               &RobotStateDisplay::newRobotStateCallback, this);
 }
 
 void RobotStateDisplay::newRobotStateCallback(const moveit_msgs::msg::DisplayRobotState::ConstSharedPtr state_msg)
@@ -375,7 +375,7 @@ void RobotStateDisplay::newRobotStateCallback(const moveit_msgs::msg::DisplayRob
     else
       setStatus(rviz_common::properties::StatusProperty::Warn, "RobotState", "Hidden");
   }
-  //setRobotHighlights(state_msg->highlight_links);
+  setRobotHighlights(state_msg->highlight_links);
   update_state_ = true;
 }
 
@@ -415,18 +415,21 @@ void RobotStateDisplay::unsetLinkColor(rviz_default_plugins::robot::Robot* robot
 void RobotStateDisplay::loadRobotModel()
 {
   load_robot_model_ = false;
-  if (!rdf_loader_)
-    rdf_loader_.reset(new rdf_loader::RDFLoader(root_nh_, robot_description_property_->getStdString()));
 
-  if (rdf_loader_->getURDF())
+  std::string urdf_str;
+  rdf_loader::RDFLoader::loadXmlFileToString(urdf_str, robot_description_property_->getStdString(), {});
+
+  if (!urdf_str.empty())
   {
     try {
-        const srdf::ModelSharedPtr& srdf =
-            rdf_loader_->getSRDF() ? rdf_loader_->getSRDF() : srdf::ModelSharedPtr(new srdf::Model());
-        kmodel_ =  std::make_shared<moveit::core::RobotModel>(rdf_loader_->getURDF(), srdf);
+        auto urdf = std::make_shared<urdf::Model>();
+        urdf->initString(urdf_str);
+        kmodel_ =  std::make_shared<moveit::core::RobotModel>(urdf, std::make_shared<srdf::Model>());
         robot_->load(*kmodel_->getURDF());
+
         kstate_ = std::make_shared<moveit::core::RobotState>(kmodel_);
         kstate_->setToDefaultValues();
+
         bool oldState = root_link_name_property_->blockSignals(true);
         root_link_name_property_->setStdString(getRobotModel()->getRootLinkName());
         root_link_name_property_->blockSignals(oldState);
@@ -436,6 +439,7 @@ void RobotStateDisplay::loadRobotModel()
         changedEnableVisualVisible();
         changedEnableCollisionVisible();
         robot_->setVisible(true);
+
     } catch (const moveit::Exception& e) {
         setStatus(rviz_common::properties::StatusProperty::Error, "RobotState", e.what());
         robot_->setVisible(false);
@@ -445,6 +449,7 @@ void RobotStateDisplay::loadRobotModel()
     setStatus(rviz_common::properties::StatusProperty::Error, "RobotState", "No Planning Model Loaded");
 
   highlights_.clear();
+
 }
 
 void RobotStateDisplay::onEnable()
@@ -459,7 +464,7 @@ void RobotStateDisplay::onEnable()
 // ******************************************************************************************
 void RobotStateDisplay::onDisable()
 {
-  robot_state_subscriber_.reset();
+  //robot_state_subscriber_.reset();
   if (robot_)
     robot_->setVisible(false);
   Display::onDisable();
@@ -495,7 +500,9 @@ void RobotStateDisplay::calculateOffsetPosition()
   Ogre::Vector3 position;
   Ogre::Quaternion orientation;
 
-  context_->getFrameManager()->getTransform(getRobotModel()->getModelFrame(), rclcpp::Time(0), position, orientation);
+  context_->getFrameManager()->getTransform(getRobotModel()->getModelFrame(), 
+          rclcpp::Time(0, 0, context_->getClock()->get_clock_type()),
+          position, orientation);
 
   scene_node_->setPosition(position);
   scene_node_->setOrientation(orientation);
